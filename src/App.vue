@@ -21,18 +21,33 @@
 </template>
 
 <script setup lang="ts">
-
 import { Plus } from '@element-plus/icons-vue'
-import { reactive, watch } from 'vue'
+import { reactive, watch, onMounted } from 'vue'
+import request from '@/utils/request'
+onMounted(() => {
+  request({
+    url: '/user/login',
+    method: 'post',
+    data: {
+      username: 'admin',
+      password: '123456',
+    },
+  }).then((res) => {
+    console.log(res)
+  })
+})
 console.log(import.meta.env)
-var a = 100;
+var a = 100
 console.log(a)
 const state = reactive({
-  count: 0
+  count: 0,
 })
-watch(() => state.count, (count,countPre) => {
-  console.log(count,countPre)
-})
+watch(
+  () => state.count,
+  (count, countPre) => {
+    console.log(count, countPre)
+  },
+)
 </script>
 
 <style scoped lang="scss">
