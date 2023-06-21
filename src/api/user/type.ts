@@ -1,10 +1,11 @@
-export interface loginForm {
+export interface loginFormData {
     username: string,
     password: string
 }
 
 interface dataType {
-    token: string
+    token?: string,
+    message?: string
 }
 
 export interface loginResponseData {

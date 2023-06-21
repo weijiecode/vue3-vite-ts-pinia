@@ -9,12 +9,15 @@ import router from './router'
 // 忽略引入国际化报的ts错误
 //@ts-ignore
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
+// 引入仓库
+import pinia from './store'
 import App from '@/App.vue'
 
 const app = createApp(App)
 app.use(ElementPlus, {
     locale: zhCn,
   });
+app.use(pinia);
 app.use(router);
 app.component('SvgIcon', SvgIcon)
 app.mount('#app')
