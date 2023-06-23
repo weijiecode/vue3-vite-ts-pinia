@@ -3,7 +3,7 @@
     <!-- 左侧菜单 -->
     <div class="layout_slider">
       <Logo></Logo>
-      <el-scrollbar class="scrollbar" height="400px">
+      <el-scrollbar class="scrollbar">
         <el-menu background-color="#001529" text-color="white">
           <Menu :menuList="userStore.menuRoutes"></Menu>
         </el-menu>
@@ -12,11 +12,14 @@
     <!-- 顶部内容 -->
     <div class="layout_tabber">222</div>
     <!-- 内容展示区域 -->
-    <div class="layout_main"></div>
+    <div class="layout_main">
+      <Main></Main>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import Main from '@/layout/main/index.vue'
 import Logo from './logo/index.vue'
 import Menu from './menu/index.vue'
 import useUserStore from '@/store/modules/user';
@@ -27,11 +30,11 @@ let userStore = useUserStore()
 .layout_container {
   width: 100%;
   height: 100vh;
-  color: #fff;
   .layout_slider {
     background: #001529;
     width: 260px;
     height: 100vh;
+    color: #fff;
     .scrollbar {
       width: 100%;
       height: calc(100vh - 50px);
