@@ -4,13 +4,15 @@
     <div class="layout_slider">
       <Logo></Logo>
       <el-scrollbar class="scrollbar">
-        <el-menu background-color="#001529" text-color="white">
+        <el-menu :default-active="route.path" background-color="#001529" text-color="white">
           <Menu :menuList="userStore.menuRoutes"></Menu>
         </el-menu>
       </el-scrollbar>
     </div>
     <!-- 顶部内容 -->
-    <div class="layout_tabber">222</div>
+    <div class="layout_tabber">
+      <Tabbar></Tabbar>
+    </div>
     <!-- 内容展示区域 -->
     <div class="layout_main">
       <Main></Main>
@@ -19,10 +21,13 @@
 </template>
 
 <script lang="ts" setup>
+import Tabbar from '@/layout/tabbar/index.vue'
 import Main from '@/layout/main/index.vue'
-import Logo from './logo/index.vue'
-import Menu from './menu/index.vue'
+import Logo from '@/layout/logo/index.vue'
+import Menu from '@/layout/menu/index.vue'
 import useUserStore from '@/store/modules/user';
+import { useRoute } from 'vue-router'
+const route = useRoute()
 let userStore = useUserStore()
 </script>
 
