@@ -8,12 +8,12 @@
   ></el-button>
   <el-button size="small" icon="Setting" circle></el-button>
   <img
-    src="../../../../public/logo.png"
+    :src="userStore.avatar"
     style="width: 24px; height: 24px; margin: 0 10px; border-radius: 50%"
   />
   <el-dropdown>
     <span class="el-dropdown-link" style="cursor: pointer">
-      admin
+      {{ userStore.username }}
       <el-icon class="el-icon--right">
         <arrow-down />
       </el-icon>
@@ -28,6 +28,8 @@
 
 <script setup lang="ts">
 import useLayOutSettingStore from '@/store/modules/setting'
+import useUserStore from '@/store/modules/user'
+const userStore = useUserStore()
 const LayOutSettingStore = useLayOutSettingStore()
 const toRefsh = () => {
   LayOutSettingStore.refsh = !LayOutSettingStore.refsh
