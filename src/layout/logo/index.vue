@@ -8,6 +8,11 @@
 <script setup lang="ts">
 
 </script>
+<script lang="ts">
+export default {
+  name: 'Logo'
+}
+</script>
 
 <style scoped lang="scss">
 .logo {
@@ -19,8 +24,9 @@
   padding: 20px;
   img {
     margin-right: 10px;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
+    margin-left: -10px;
     border-radius: 10px;
   }
   p {

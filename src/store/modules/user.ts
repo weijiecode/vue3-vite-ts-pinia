@@ -1,6 +1,6 @@
 // 创建用户相关的小仓库
 import { defineStore } from 'pinia'
-import { reqLogin } from '@/api/user'
+import { reqLogin, reqUserInfo } from '@/api/user'
 import type { UserState } from './types/type'
 import { SET_TOKEN, GET_TOKEN } from '@/utils/token'
 import type { loginFormData, loginResponseData } from '@/api/user/type'
@@ -12,6 +12,8 @@ let useUserStore = defineStore('User', {
     return {
       token: GET_TOKEN(),
       menuRoutes: constantRoute, // 仓库存储生成菜单需要数组（路由）
+      username: '',
+      avatar: ''
     }
   },
   actions: {
@@ -28,6 +30,16 @@ let useUserStore = defineStore('User', {
         return Promise.reject(new Error(result.data.message))
       }
     },
+    async userInfo() {
+      let res = await reqUserInfo()
+      console.log(res)
+      if(res.code == 200) {
+        this.username = res.data.checkUser.username
+        this.avatar = res.data.checkUser.avatar
+      }else {
+
+      }
+    }
   },
   getters: {},
 })
