@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia'
 import { reqLogin, reqUserInfo } from '@/api/user'
 import type { UserState } from './types/type'
-import { SET_TOKEN, GET_TOKEN } from '@/utils/token'
+import { SET_TOKEN, GET_TOKEN, REMOVE_TOKEN } from '@/utils/token'
 import type { loginFormData, loginResponseData } from '@/api/user/type'
 // 引入路由
 import { constantRoute } from '@/router/routes'
@@ -33,12 +33,16 @@ let useUserStore = defineStore('User', {
     async userInfo() {
       let res = await reqUserInfo()
       console.log(res)
-      if(res.code == 200) {
+      if (res.code == 200) {
         this.username = res.data.checkUser.username
         this.avatar = res.data.checkUser.avatar
-      }else {
-
       }
+    },
+    userLogout() {
+      this.token = ''
+      this.username = ''
+      this.avatar = ''
+      REMOVE_TOKEN()
     }
   },
   getters: {},

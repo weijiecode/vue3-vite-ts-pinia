@@ -27,9 +27,12 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter, useRoute } from 'vue-router'
 import useLayOutSettingStore from '@/store/modules/setting'
 import useUserStore from '@/store/modules/user'
 const userStore = useUserStore()
+const router = useRouter()
+const route = useRoute()
 const LayOutSettingStore = useLayOutSettingStore()
 const toRefsh = () => {
   LayOutSettingStore.refsh = !LayOutSettingStore.refsh
@@ -42,7 +45,15 @@ const fullScreen = () => {
     document.exitFullscreen()
   }
 }
-const logout = () => {}
+const logout = () => {
+  userStore.userLogout()
+  router.push({
+    path: '/login',
+    query: {
+      redirect: route.path
+    }
+  })
+}
 </script>
 
 <style scoped></style>
