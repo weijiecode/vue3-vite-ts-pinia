@@ -30,6 +30,7 @@
 import { useRouter, useRoute } from 'vue-router'
 import useLayOutSettingStore from '@/store/modules/setting'
 import useUserStore from '@/store/modules/user'
+import { ElNotification } from 'element-plus'
 const userStore = useUserStore()
 const router = useRouter()
 const route = useRoute()
@@ -45,13 +46,17 @@ const fullScreen = () => {
     document.exitFullscreen()
   }
 }
-const logout = () => {
-  userStore.userLogout()
+const logout = async () => {
+  await userStore.userLogout()
+  ElNotification({
+    type: 'success',
+    message: '退出成功'
+  })
   router.push({
     path: '/login',
     query: {
-      redirect: route.path
-    }
+      redirect: route.path,
+    },
   })
 }
 </script>

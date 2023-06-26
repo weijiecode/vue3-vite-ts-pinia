@@ -55,7 +55,7 @@ let loading = ref(false)
 
 let loginForm = reactive({
   username: 'admin',
-  password: '123456',
+  password: 'atguigu123',
 })
 
 const rules = reactive<FormRules>({
