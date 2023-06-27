@@ -101,6 +101,7 @@ import type {
 import {
   reqHasTrademark,
   reqAddOrUpdateTrademark,
+  reqDeleteTrademark
 } from '@/api/product/tradmark'
 import { ElMessage } from 'element-plus'
 import type { UploadProps } from 'element-plus'
@@ -143,10 +144,23 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
   }
 }
 
+const removeTradeMark = async (id: any) => {
+  let res = await reqDeleteTrademark(id)
+  console.log(res)
+  if(res.code == 200) {
+    ElMessage({
+      type: 'success',
+      message: '删除成功'
+    })
+    getHasTradeMark(tradeMarkArr.value.length>1?pageNum.value:pageNum.value-1)
+  }
+}
+
 const addTradeMark = () => {
   dialogFormVisible.value = true
   trademarkParams.logoUrl = ''
   trademarkParams.tmName = ''
+  trademarkParams.id = 0
 }
 
 const sizeChange = () => {
@@ -163,7 +177,7 @@ const confirm = async () => {
       type: 'success',
       message: '添加品牌成功',
     })
-    getHasTradeMark()
+    getHasTradeMark(trademarkParams.id?pageNum.value:1)
   } else {
     ElMessage({
       type: 'error',
