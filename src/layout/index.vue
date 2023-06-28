@@ -1,107 +1,89 @@
-<template>
-  <div class="layout_container">
-    <!-- 左侧菜单 -->
-    <div
-      class="layout_slider"
-      :class="{ fold: LayOutSettingStore.fold ? true : false }"
-    >
-      <Logo></Logo>
-      <el-scrollbar class="scrollbar">
-        <el-menu
-          :collapse="LayOutSettingStore.fold"
-          :default-active="route.path"
-          background-color="#001529"
-          text-color="white"
-        >
-          <Menu :menuList="userStore.menuRoutes"></Menu>
-        </el-menu>
-      </el-scrollbar>
-    </div>
-    <!-- 顶部内容 -->
-    <div
-      class="layout_tabber"
-      :class="{ fold: LayOutSettingStore.fold ? true : false }"
-    >
-      <Tabbar></Tabbar>
-    </div>
-    <!-- 内容展示区域 -->
-    <div
-      class="layout_main"
-      :class="{ fold: LayOutSettingStore.fold ? true : false }"
-    >
-      <Main></Main>
-    </div>
-  </div>
-</template>
-
-<script lang="ts" setup>
-import Tabbar from '@/layout/tabbar/index.vue'
-import Main from '@/layout/main/index.vue'
-import Logo from '@/layout/logo/index.vue'
-import Menu from '@/layout/menu/index.vue'
+<!--
+ * @Description: Stay hungry，Stay foolish
+ * @Author: Huccct
+ * @Date: 2023-05-20 20:25:03
+ * @LastEditors: Huccct
+ * @LastEditTime: 2023-05-26 21:50:47
+-->
+<script setup lang="ts">
+import Logo from './logo/index.vue'
+import Menu from './menu/index.vue'
+import TabBar from './tabbar/index.vue'
+import Main from './main/index.vue'
+import useLayOutSettingStore from '@/store/modules/setting'
 import useUserStore from '@/store/modules/user'
 import { useRoute } from 'vue-router'
-import useLayOutSettingStore from '@/store/modules/setting'
-const LayOutSettingStore = useLayOutSettingStore()
-console.log(LayOutSettingStore.fold)
-const route = useRoute()
+
 let userStore = useUserStore()
-</script>
+let $route = useRoute()
 
-<script lang="ts">
-export default {
-  name: 'Layout',
-}
+let LayOutSettingStore = useLayOutSettingStore()
 </script>
+<template>
+  <el-container class="layout-container-demo" style="height: 100vh">
+    <el-aside
+      width="200px"
+      :class="{ isCollapse: LayOutSettingStore.isCollapse ? true : false }"
+    >
+      <el-scrollbar>
+        <el-menu
+          :default-active="$route.path"
+          active-text-color="#fff"
+          background-color="#001529"
+          text-color="#959ea6"
+          :collapse="LayOutSettingStore.isCollapse"
+          :router="true"
+        >
+          <Logo />
+          <Menu :menuList="userStore.menuRoutes" />
+        </el-menu>
+      </el-scrollbar>
+    </el-aside>
 
+    <el-container class="container">
+      <TabBar style="width: 100%" />
+      <el-main
+        :style="{
+          left: !LayOutSettingStore.isCollapse ? '200px' : '56px',
+          width: LayOutSettingStore.isCollapse
+            ? 'calc(100% - 56px)'
+            : 'calc(100% - 200px)',
+        }"
+      >
+        <el-scrollbar>
+          <Main />
+        </el-scrollbar>
+      </el-main>
+    </el-container>
+  </el-container>
+</template>
 <style lang="scss" scoped>
-.layout_container {
-  width: 100%;
-  height: 100vh;
-  .layout_slider {
-    background: #001529;
-    width: 260px;
-    height: 100vh;
-    color: #fff;
-    transition: all 0.3s;
-    .scrollbar {
-      width: 100%;
-      height: calc(100vh - 50px);
-      .el-menu {
-        border-right: none;
-      }
-    }
-    &.fold {
-      width: 50px;
-    }
-  }
-  .layout_tabber {
-    position: fixed;
-    top: 0;
-    left: 260px;
-    width: calc(100% - 260px);
-    height: 50px;
-    transition: all 0.3s;
+.layout-container-demo {
+  height: 100%;
+}
+.layout-container-demo .el-menu {
+  border-right: none;
+}
+.layout-container-demo .el-main {
+  position: absolute;
+  padding: 20px;
+  left: 200px;
+  top: 60px;
+  transition: all 0.3s;
+  width: calc(100% - $base-menu-width);
+  height: calc(100vh - 60px);
+}
 
-    &.fold {
-      left: 50px;
-      width: calc(100% - 50px);
-    }
-  }
-  .layout_main {
-    position: absolute;
-    left: 260px;
-    top: 50px;
-    width: calc(100% - 260px);
-    height: calc(100vh - 50px);
-    padding: 20px;
-    overflow: auto;
-    transition: all 0.3s;
-
-    &.fold {
-      left: 50px;
-      width: calc(100% - 50px);
-    }
-  }
+.el-aside {
+  background-color: #001529 !important;
+  transition: all 0.3s;
+}
+.el-header {
+  background-color: #fff !important;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 3px 0px;
+  z-index: 999;
+}
+.isCollapse {
+  width: 56px;
 }
 </style>

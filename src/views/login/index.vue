@@ -1,153 +1,223 @@
+<!--
+ * @Description: Stay hungry，Stay foolish
+ * @Author: Huccct
+ * @Date: 2023-05-19 17:38:16
+ * @LastEditors: Huccct
+ * @LastEditTime: 2023-05-23 22:02:06
+-->
+<script setup lang="ts">
+import { User, Lock, Warning } from '@element-plus/icons-vue'
+import { Ref, computed, reactive, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { ElNotification } from 'element-plus'
+import { getTime } from '@/utils/time'
+import useUserStore from '@/store/modules/user'
+import Identify from '@/components/VerifyCode/index.vue'
+// VerifyCode import
+
+let $router = useRouter()
+let $route = useRoute()
+let loading = ref(false)
+
+const identifyCode = ref('1234')
+const identifyCodes = ref('1234567890abcdefjhijklinopqrsduvwxyz')
+
+// 重置验证码
+const refreshCode = () => {
+  identifyCode.value = ''
+  makeCode(identifyCode, 4)
+}
+
+const makeCode = (o: Ref<any>, l: number) => {
+  for (let i = 0; i < l; i++) {
+    identifyCode.value +=
+      identifyCodes.value[randomNum(0, identifyCodes.value.length)]
+  }
+}
+
+const randomNum = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min) + min)
+}
+
+let useStore = useUserStore()
+let loginForms = ref()
+
+const loginForm = reactive({
+  username: 'admin',
+  password: 'atguigu123',
+  verifyCode: '1234',
+})
+
+const validatorUsername = (rule: any, value: any, callback: any) => {
+  if (value.length === 0) {
+    callback(new Error('请输入账号'))
+  } else {
+    callback()
+  }
+}
+
+const validatorPassword = (rule: any, value: any, callback: any) => {
+  if (value.length === 0) {
+    callback(new Error('请输入密码'))
+  } else if (value.length < 6 || value.length > 16) {
+    callback(new Error('密码应为6~16位的任意组合'))
+  } else {
+    callback()
+  }
+}
+
+const validatorVerifyCode = (rule: any, value: any, callback: any) => {
+  console.log(value, identifyCode.value)
+
+  if (value.length === 0) {
+    callback(new Error('请输入验证码'))
+  } else if (value.length < 4) {
+    callback(new Error('请输入正确的验证码'))
+  } else if (identifyCode.value !== value) {
+    callback(new Error('请输入正确的验证码'))
+  } else if (identifyCode.value === value) {
+    callback()
+  }
+}
+
+const login = async () => {
+  await loginForms.value.validate()
+  loading.value = true
+  try {
+    await useStore.userLogin(loginForm)
+    let redirect: string = $route.query.redirect as string
+    $router.push({ path: redirect || '/' })
+    $router.push('/')
+    ElNotification({
+      type: 'success',
+      message: '登陆成功',
+      title: `Hi, ${getTime()}好`,
+    })
+    loading.value = false
+  } catch (error) {
+    loading.value = false
+    ElNotification({
+      type: 'error',
+      message: (error as Error).message,
+    })
+  }
+}
+
+const rules = {
+  username: [
+    {
+      trigger: 'change',
+      validator: validatorUsername,
+    },
+  ],
+  password: [
+    {
+      trigger: 'change',
+      validator: validatorPassword,
+    },
+  ],
+  verifyCode: [
+    {
+      trigger: 'blur',
+      validator: validatorVerifyCode,
+    },
+  ],
+}
+
+// ../../assets/images/0050.png
+</script>
 <template>
   <div class="login_container">
     <el-row>
       <el-col :span="12" :xs="0"></el-col>
       <el-col :span="12" :xs="24">
-        <el-form ref="ruleFormRef" class="login_form" :model="loginForm" :rules="rules">
-          <h1>Hello</h1>
-          <h2>欢迎使用</h2>
-          <el-form-item prop="username">
-            <el-input
-              v-model="loginForm.username"
-              :prefix-icon="User"
-            ></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-input
-              show-password
-              v-model="loginForm.password"
-              :prefix-icon="Lock"
-              type="password"
-              prop="password"
-            ></el-input>
-          </el-form-item>
+        <el-card class="login_form">
+          <h1>Vue-Admin</h1>
+          <el-form :model="loginForm" :rules="rules" ref="loginForms">
+            <el-form-item prop="username">
+              <el-input
+                :prefix-icon="User"
+                v-model="loginForm.username"
+                clearable
+                placeholder="Username"
+                size="large"
+              ></el-input>
+            </el-form-item>
+            <el-form-item prop="password">
+              <el-input
+                type="password"
+                :prefix-icon="Lock"
+                show-password
+                v-model="loginForm.password"
+                size="large"
+                placeholder="Password"
+                clearable
+              ></el-input>
+            </el-form-item>
+            <el-form-item prop="verifyCode">
+              <el-input
+                :prefix-icon="Warning"
+                show-password
+                v-model="loginForm.verifyCode"
+                placeholder="VerifyCode"
+                size="large"
+                maxlength="4"
+              >
+                <template #append>
+                  <Identify :identifyCode="identifyCode" @click="refreshCode" />
+                </template>
+              </el-input>
+            </el-form-item>
+          </el-form>
           <el-form-item>
             <el-button
               :loading="loading"
               class="login_btn"
-              @click="login(ruleFormRef)"
               type="primary"
               size="default"
+              @click="login"
             >
               登录
             </el-button>
           </el-form-item>
-        </el-form>
+        </el-card>
       </el-col>
     </el-row>
   </div>
 </template>
-
-<script setup lang="ts">
-import { User, Lock } from '@element-plus/icons-vue'
-import { reactive, ref } from 'vue'
-import useUserStore from '@/store/modules/user'
-import { useRouter, useRoute } from 'vue-router'
-import { ElNotification, ElMessage } from 'element-plus'
-import { getTime } from '@/utils/time'
-import type { FormInstance, FormRules } from 'element-plus'
-const ruleFormRef = ref<FormInstance>()
-
-const router = useRouter()
-const route = useRoute()
-let useStore = useUserStore()
-let loading = ref(false)
-
-let loginForm = reactive({
-  username: 'admin',
-  password: 'atguigu123',
-})
-
-const rules = reactive<FormRules>({
-  username: [
-    {
-      required: true,
-      message: '用户名不能为空',
-      trigger: 'blur',
-    },
-    {
-      min: 5,
-      max: 10,
-      message: '账号长度为 6 至 10',
-      trigger: 'change',
-    },
-  ],
-  password: [
-    {
-      required: true,
-      message: '密码不能为空',
-      trigger: 'blur',
-    },
-    {
-      min: 6,
-      max: 10,
-      message: '密码长度为 6 至 15',
-      trigger: 'change',
-    },
-  ],
-})
-
-let login = async (formEl: FormInstance | undefined) => {
-    console.log(formEl)
-  if (!formEl) return
-  await formEl.validate(async (valid) => {
-    if (valid) {
-      try {
-        loading.value = true
-        await useStore.userLogin(loginForm)
-        loading.value = false
-        console.log(route.query.redirect)
-        if(route.query.redirect) {
-          router.push(route.query.redirect as string)
-        }else {
-          router.push('/')
-        }
-        ElNotification({
-          type: 'success',
-          message: '欢迎回来',
-          title: `HI,${getTime()}好`,
-        })
-      } catch (error) {
-        loading.value = false
-        ElMessage({
-          type: 'error',
-          message: (error as Error).message,
-        })
-      }
-    } else {
-      console.log('error!')
-    }
-  })
-}
-</script>
-
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .login_container {
   width: 100%;
   height: 100vh;
   background: url('@/assets/images/background.jpg') no-repeat;
   background-size: cover;
+  position: fixed;
+  .login_form {
+    position: relative;
+    width: 55%;
+    top: 25vh;
+    left: 10vw;
+    padding: 10px;
+    background: transparent;
+    h1 {
+      background: linear-gradient(to right, blue, rgb(35, 60, 70));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 40px;
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 40px;
+      margin-top: -10px;
+    }
+    .login_btn {
+      width: 100%;
+    }
+  }
 }
-
-.login_form {
-  position: relative;
-  width: 80%;
-  top: 30vh;
-  background: url('@/assets/images/login_form.png') no-repeat;
-  background-size: cover;
-  padding: 40px;
-  h1 {
-    color: #fff;
-    font-size: 40px;
-  }
-  h2 {
-    color: #fff;
-    font-size: 20px;
-    margin: 20px 0px;
-  }
-
-  .login_btn {
-    width: 100%;
-  }
+.el-card {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+:deep(.el-input-group__append, .el-input-group__prepend) {
+  padding: 0;
 }
 </style>

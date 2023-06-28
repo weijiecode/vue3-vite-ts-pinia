@@ -1,11 +1,17 @@
-// 小仓库关于layout相关配置
+/*
+ * @Description: Stay hungry，Stay foolish
+ * @Author: Huccct
+ * @Date: 2023-05-20 21:42:14
+ * @LastEditors: Huccct
+ * @LastEditTime: 2023-05-21 20:54:48
+ */
 import { defineStore } from 'pinia'
 
 let useLayOutSettingStore = defineStore('SettingStore', {
   state: () => {
     return {
-      fold: false, // 菜单折叠
-      refsh: false, // 控制刷新
+      isCollapse: false,
+      refsh: false,
     }
   },
 })
